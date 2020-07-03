@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
         string firstArg(argv[1]);
         if (firstArg == "/?")
         {
-            cout << "Usage Example" << endl << "lw4.exe inputBMP.bmp outputBMP.bmp numOfCores numOfThreads threadPrioritiesThroughDelimiterSpace" << endl;
+            cout << "Usage Example" << endl << "lw6.exe inputBMP.bmp outputBMP.bmp numOfCores numOfThreads threadPrioritiesThroughDelimiterSpace" << endl;
             cout << "threadPrioritiesSpecification: " << "below-normal, normal, above-normal" << endl;
             return -1;
         }
@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
 
     if (argc < THREAD_PRIORITY_START_INDEX)
     {
-        cout << "Invalid arguments. If you need help use: lw4.exe /?" << endl;
+        cout << "Invalid arguments. If you need help use: lw6.exe /?" << endl;
         return -1;
     }
 
@@ -127,7 +127,7 @@ int main(int argc, char* argv[])
 
     if (argc != THREAD_PRIORITY_START_INDEX + numOfThreads)
     {
-        cout << "Invalid arguments. If you need help use: lw4.exe /?" << endl;
+        cout << "Invalid arguments. If you need help use: lw6.exe /?" << endl;
         return -1;
     }
 
