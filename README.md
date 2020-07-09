@@ -4,7 +4,7 @@
 ### Лабораторная работа 4: 
 - https://drive.google.com/file/d/1jFV56HEtqlV5lZRIgb0wcAk6FUTK-gn3/view?usp=sharing                     
 ### Лабораторная работа 8:
-  - lw8.exe handlingMode(1t1o/pool) numOfBlocks inputDirectoryPath outputDirectoryPath numOfThreadsInPool
+  - Пример использования: lw8.exe handlingMode(1t1o/pool) numOfBlocks inputDirectoryPath outputDirectoryPath numOfThreadsInPool
   - Режим Pool: количество блоков - 4, количество потоков - 8. Время - 4590 ms.
   - Режим Новый поток на каждую операцию: количество блоков - 4, количество потоков - 8. Время - 4997 ms.
   - Время на создание потока: 50 ms
