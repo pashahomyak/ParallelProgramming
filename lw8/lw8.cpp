@@ -156,13 +156,13 @@ int main(int argc, char* argv[])
         int handleSize = numberOfBlocksAtBreakage;
 
         HANDLE* handles = new HANDLE[handleSize];
-        for (int j = 0; j < handleSize; j++)
-        {
-            handles[j] = CreateThread(NULL, 0, &ThreadProc, &threadDataParams[j], CREATE_SUSPENDED, NULL);
-        }
-
         if (handlingMode == "1t1o")
         {
+            for (int j = 0; j < handleSize; j++)
+            {
+                handles[j] = CreateThread(NULL, 0, &ThreadProc, &threadDataParams[j], 0, NULL); //работает сразу после создания
+            }
+
             for (int k = 0; k < handleSize; k++)
             {
                 ResumeThread(handles[k]);
@@ -172,6 +172,11 @@ int main(int argc, char* argv[])
         }
         else if (handlingMode == "pool")
         {
+            for (int j = 0; j < handleSize; j++)
+            {
+                handles[j] = CreateThread(NULL, 0, &ThreadProc, &threadDataParams[j], CREATE_SUSPENDED, NULL);
+            }
+
             ThreadPool threadPool(handles, numberOfPoolStreams, handleSize);
             threadPool.Run();
         }
