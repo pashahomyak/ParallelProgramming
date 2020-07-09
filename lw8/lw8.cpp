@@ -163,11 +163,6 @@ int main(int argc, char* argv[])
                 handles[j] = CreateThread(NULL, 0, &ThreadProc, &threadDataParams[j], 0, NULL); //работает сразу после создания
             }
 
-            for (int k = 0; k < handleSize; k++)
-            {
-                ResumeThread(handles[k]);
-            }
-
             WaitForMultipleObjects(handleSize, handles, true, INFINITE);
         }
         else if (handlingMode == "pool")
