@@ -14,6 +14,7 @@ void ThreadPool::Run()
 	for (int i = 0; i < inputSize; i++)
 	{
 		ResumeThread(handles[i]);
+		handleCounter++;
 
 		if (handleCounter == numberOfThreads)
 		{
