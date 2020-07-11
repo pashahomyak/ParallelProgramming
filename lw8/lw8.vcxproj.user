@@ -11,4 +11,8 @@
     <LocalDebuggerCommandArguments>1t1o 3 C:/univer/ParallelProgramming/lw8_input C:/univer/ParallelProgramming/lw8_output 3</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LocalDebuggerCommandArguments>pool 3 C:/univer/ParallelProgramming/lw8_input C:/univer/ParallelProgramming/lw8_output 3</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>

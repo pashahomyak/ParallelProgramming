@@ -1,17 +1,25 @@
 #pragma once
 #include<string>
 #include<windows.h>
+#include<vector>
+#include "ITask.h"
+#include "WorkerThread.h"
 
 class ThreadPool
 {
 public:
-	ThreadPool(HANDLE* handles, int poolThreadSize, int handleSize);
+	ThreadPool(std::vector<ITask*> tasks, int poolThreadSize);
 
-	void Run();
+	static DWORD WINAPI WorkerThreadProc(CONST LPVOID lpParam);
+
+	~ThreadPool();
 
 private:
 	int numberOfThreads;
-	int inputSize;
+	size_t inputSize;
+	bool stopState;
 
-	HANDLE* handles;
+	std::vector<ITask*> tasks;
+
+	std::vector<HANDLE> workerThreads;
 };

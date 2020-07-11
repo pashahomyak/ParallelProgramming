@@ -151,15 +151,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BlurBMPTask.cpp" />
     <ClCompile Include="DirectoryReader.cpp" />
     <ClCompile Include="lw8.cpp" />
     <ClCompile Include="simplebmp.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
+    <ClCompile Include="WorkerThread.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BlurBMPTask.h" />
     <ClInclude Include="DirectoryReader.h" />
+    <ClInclude Include="ITask.h" />
+    <ClInclude Include="IWorker.h" />
     <ClInclude Include="simplebmp.h" />
     <ClInclude Include="ThreadPool.h" />
+    <ClInclude Include="WorkerThread.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

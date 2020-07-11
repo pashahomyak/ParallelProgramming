@@ -8,76 +8,10 @@
 #include "simplebmp.h"
 #include "DirectoryReader.h"
 #include "ThreadPool.h"
+#include "BlurBMPTask.h"
+#include "ITask.h"
 
 using namespace std;
-
-struct ThreadData
-{
-    SimpleBMP* bmp;
-    int startIndex;
-    int endIndex;
-};
-
-struct RGBColor
-{
-    unsigned char red;
-    unsigned char green;
-    unsigned char blue;
-};
-
-vector<RGBColor> GetVectorColor(int i, int j, SimpleBMP* bmp, int& pixelCounter)
-{
-    vector<RGBColor> resultVector;
-
-    for (int k = -5; k <= 5; k++)
-    {
-        for (int l = -5; l <= 5; l++)
-        {
-            unsigned char red = 0, green = 0, blue = 0;
-
-            if ((i + k) < bmp->getWidth() && (i + k) >= 0 && j + l < bmp->getHeight() && j + l >= 0)
-            {
-                bmp->getPixel(i + k, j + l, &red, &green, &blue);
-                pixelCounter++;
-                resultVector.push_back(RGBColor{ red, green, blue });
-            }
-        }
-    }
-
-    return resultVector;
-}
-
-DWORD WINAPI ThreadProc(CONST LPVOID lpParam)
-{
-    const ThreadData* data = static_cast<ThreadData*>(lpParam);
-
-    SimpleBMP* bmp = data->bmp;
-
-    for (int i = data->startIndex; i <= data->endIndex; i++)
-    {
-        for (int j = 0; j < bmp->getHeight(); j++)
-        {
-            //количество повторений
-            for (int k = 0; k < 3; k++)
-            {
-                int sumR = 0; int sumG = 0; int sumB = 0; int pixelCounter = 0;
-
-                vector<RGBColor> pixelVector = GetVectorColor(i, j, bmp, pixelCounter);
-
-                for (auto& item : pixelVector)
-                {
-                    sumR += item.red;
-                    sumG += item.green;
-                    sumB += item.blue;
-                }
-
-                bmp->setPixel(i, j, sumR / pixelCounter, sumG / pixelCounter, sumB / pixelCounter);
-            }
-        }
-    }
-
-    ExitThread(0); // функция устанавливает код завершения потока в 0
-}
 
 int main(int argc, char* argv[])
 {
@@ -110,7 +44,10 @@ int main(int argc, char* argv[])
         fs::create_directory(outputDirectoryPath);
     }
     
-    for (int c = 0; c < inputFiles.size(); c++)
+    size_t inputFilesCount = inputFiles.size();
+
+    //генерация очереди 
+    for (int c = 0; c < inputFilesCount; c++)
     {
         SimpleBMP bmp;
         bmp.load(inputFiles[c].c_str());
@@ -118,11 +55,9 @@ int main(int argc, char* argv[])
         int bmpWidth = bmp.getWidth();
         int bmpHeigth = bmp.getHeight();
 
-        auto pixels = bmp.getPixels();
-
         div_t divider = div(bmpWidth, numberOfBlocksAtBreakage);
 
-        ThreadData* threadDataParams = new ThreadData[numberOfBlocksAtBreakage];
+        vector<ITask*> tasks;
 
         //деление по вертикали
         for (int i = 0; i < numberOfBlocksAtBreakage; i++)
@@ -150,30 +85,25 @@ int main(int argc, char* argv[])
 
             ThreadData data = { &bmp, startIndex, endIndex };
 
-            threadDataParams[i] = data;
+            tasks.push_back(new BlurBMPTask(data));
         }
-
+        
         int handleSize = numberOfBlocksAtBreakage;
 
-        HANDLE* handles = new HANDLE[handleSize];
         if (handlingMode == "1t1o")
         {
+            HANDLE* handles = new HANDLE[handleSize];
+
             for (int j = 0; j < handleSize; j++)
             {
-                handles[j] = CreateThread(NULL, 0, &ThreadProc, &threadDataParams[j], 0, NULL); //работает сразу после создания
+                handles[j] = CreateThread(NULL, 0, &ThreadProc, tasks[j], 0, NULL);
             }
 
             WaitForMultipleObjects(handleSize, handles, true, INFINITE);
         }
         else if (handlingMode == "pool")
         {
-            for (int j = 0; j < handleSize; j++)
-            {
-                handles[j] = CreateThread(NULL, 0, &ThreadProc, &threadDataParams[j], CREATE_SUSPENDED, NULL);
-            }
-
-            ThreadPool threadPool(handles, numberOfPoolStreams, handleSize);
-            threadPool.Run();
+            ThreadPool threadPool(tasks, numberOfPoolStreams);
         }
         else
         {

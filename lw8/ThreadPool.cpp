@@ -1,28 +1,48 @@
 #include "ThreadPool.h"
 
-ThreadPool::ThreadPool(HANDLE* handles, int poolThreadSize, int handleSize):
-	handles(handles),
+ThreadPool::ThreadPool(std::vector<ITask*> tasks, int poolThreadSize) :
+	tasks(tasks),
 	numberOfThreads(poolThreadSize),
-	inputSize(handleSize)
+	inputSize(tasks.size()),
+	stopState(false)
 {
+	for (int i = 0; i < numberOfThreads; i++)
+	{
+		HANDLE worker = CreateThread(nullptr, 0, &WorkerThreadProc, this, CREATE_SUSPENDED, nullptr);
+		workerThreads.push_back(worker);
+	}
 }
 
-void ThreadPool::Run()
+ThreadPool::~ThreadPool()
 {
-	int handleCounter = 0;
+	stopState = true;
 
-	for (int i = 0; i < inputSize; i++)
+	for (auto worker : workerThreads)
 	{
-		ResumeThread(handles[i]);
-		handleCounter++;
-
-		if (handleCounter == numberOfThreads)
-		{
-			WaitForMultipleObjects(i + 1, handles, true, INFINITE);
-
-			handleCounter = 0;
-		}
+		ResumeThread(worker);
 	}
 
-	WaitForMultipleObjects(inputSize, handles, true, INFINITE);
+	WaitForMultipleObjects((DWORD)workerThreads.size(), &workerThreads.front(), true, INFINITE);
+}
+
+DWORD __stdcall ThreadPool::WorkerThreadProc(const LPVOID lpParam)
+{
+	ThreadPool* data = (ThreadPool*)(lpParam);
+
+	while (true)
+	{
+		if (data->stopState && data->tasks.empty())
+		{
+			ExitThread(0);
+		}
+
+		if (!data->tasks.empty())
+		{
+			ITask* task = data->tasks.front();
+			WorkerThread workThread;
+			workThread.ExecuteTask(task);
+
+			data->tasks.erase(data->tasks.begin());
+		}
+	}
 }
