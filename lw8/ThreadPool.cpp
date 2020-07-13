@@ -17,12 +17,12 @@ ThreadPool::~ThreadPool()
 {
 	stopState = true;
 
-	for (auto worker : workerThreads)
+	for (auto&& worker : workerThreads)
 	{
 		ResumeThread(worker);
 	}
 
-	WaitForMultipleObjects((DWORD)workerThreads.size(), &workerThreads.front(), true, INFINITE);
+	WaitForMultipleObjects(workerThreads.size(), &workerThreads.front(), true, INFINITE);
 }
 
 DWORD __stdcall ThreadPool::WorkerThreadProc(const LPVOID lpParam)
