@@ -49,11 +49,11 @@ int main(int argc, char* argv[])
     //генерация очереди 
     for (int c = 0; c < inputFilesCount; c++)
     {
-        SimpleBMP bmp;
-        bmp.load(inputFiles[c].c_str());
+        SimpleBMP inputBmp;
+        inputBmp.load(inputFiles[c].c_str());
 
-        int bmpWidth = bmp.getWidth();
-        int bmpHeigth = bmp.getHeight();
+        int bmpWidth = inputBmp.getWidth();
+        int bmpHeigth = inputBmp.getHeight();
 
         div_t divider = div(bmpWidth, numberOfBlocksAtBreakage);
 
@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
                 endIndex = (i + 1) * divider.quot;
             }
 
-            ThreadData data = { &bmp, startIndex, endIndex };
+            ThreadData data = { &inputBmp, startIndex, endIndex };
 
             tasks.push_back(new BlurBMPTask(data));
         }
@@ -111,7 +111,8 @@ int main(int argc, char* argv[])
         }
 
         string outputPath = outputDirectoryPath + "/result" + to_string(c) + ".bmp";
-        bmp.save(outputPath.c_str());
+        inputBmp.save(outputPath.c_str());
+        inputBmp.destroy();
     }
 
     chrono::time_point<std::chrono::system_clock> endTime = chrono::system_clock::now();

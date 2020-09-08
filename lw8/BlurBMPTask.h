@@ -5,7 +5,7 @@
 
 struct ThreadData
 {
-    SimpleBMP* bmp;
+    SimpleBMP* inputBmp;
     int startIndex;
     int endIndex;
 };

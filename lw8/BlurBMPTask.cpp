@@ -7,18 +7,18 @@ BlurBMPTask::BlurBMPTask(ThreadData& data) :
 
 void BlurBMPTask::Execute()
 {
-    SimpleBMP* bmp = threadData.bmp;
+    SimpleBMP* inputBmp = threadData.inputBmp;
 
     for (int i = threadData.startIndex; i <= threadData.endIndex; i++)
     {
-        for (int j = 0; j < bmp->getHeight(); j++)
+        for (int j = 0; j < inputBmp->getHeight(); j++)
         {
             //количество повторений
             for (int k = 0; k < 3; k++)
             {
                 int sumR = 0; int sumG = 0; int sumB = 0; int pixelCounter = 0;
 
-                std::vector<RGBColor> pixelVector = GetVectorColor(i, j, bmp, pixelCounter);
+                std::vector<RGBColor> pixelVector = GetVectorColor(i, j, inputBmp, pixelCounter);
 
                 for (auto& item : pixelVector)
                 {
@@ -27,7 +27,7 @@ void BlurBMPTask::Execute()
                     sumB += item.blue;
                 }
 
-                bmp->setPixel(i, j, sumR / pixelCounter, sumG / pixelCounter, sumB / pixelCounter);
+                threadData.inputBmp->setPixel(i, j, sumR / pixelCounter, sumG / pixelCounter, sumB / pixelCounter);
             }
         }
     }

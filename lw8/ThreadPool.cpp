@@ -39,10 +39,10 @@ DWORD __stdcall ThreadPool::WorkerThreadProc(const LPVOID lpParam)
 		if (!data->tasks.empty())
 		{
 			ITask* task = data->tasks.front();
+			data->tasks.erase(data->tasks.begin());
+
 			WorkerThread workThread;
 			workThread.ExecuteTask(task);
-
-			data->tasks.erase(data->tasks.begin());
 		}
 	}
 }
